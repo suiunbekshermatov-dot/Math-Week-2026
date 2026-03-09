@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Math Week Challenge – IT & Business College</title>
+  <style>
+    :root {
+      --blue-900: #0b2a5b;
+      --blue-700: #154a9a;
+      --blue-500: #2b6cd4;
+      --gold-500: #f2b63d;
+      --gold-600: #d99a1a;
+      --white: #ffffff;
+      --text: #1f2a44;
+      --success: #1f8f45;
+      --error: #ca2f2f;
+      --muted: #667085;
+      --card-shadow: 0 10px 30px rgba(11, 42, 91, 0.12);
+      --radius: 18px;
+      --radius-sm: 12px;
+      --transition: 240ms ease;
+    }
+
+    * { box-sizing: border-box; }
+
+    html, body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      overflow-x: hidden;
+      font-family: "Inter", "Segoe UI", Roboto, Arial, sans-serif;
+      color: var(--text);
+      background: linear-gradient(180deg, #e9f1ff 0%, #f4f7fc 50%, #edf3ff 100%);
+      min-height: 100%;
+    }
+
+    .app {
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 16px 12px 24px;
+    }
+
+    .container {
+      width: min(100%, 920px);
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: var(--radius);
+      box-shadow: var(--card-shadow);
+      padding: clamp(16px, 4vw, 30px);
+      margin: 12px 0;
+      animation: fadeUp var(--transition);
+    }
+
+    h1, h2, h3, p { margin: 0; }
+    h1 { font-size: clamp(1.4rem, 5.6vw, 2.25rem); line-height: 1.2; color: var(--blue-900); text-align: center; margin-bottom: 10px; }
+    h2 { font-size: clamp(1.15rem, 4.6vw, 1.8rem); color: var(--blue-900); margin-bottom: 10px; text-align: center; }
+
+    .subtitle { text-align: center; font-size: clamp(1rem, 3.8vw, 1.2rem); color: var(--blue-700); margin-bottom: 22px; }
+    .section-title { color: var(--blue-900); font-size: clamp(1.05rem, 4.4vw, 1.35rem); margin-bottom: 14px; text-align: center; }
+    .subsection { font-size: 1rem; font-weight: 800; margin: 12px 0 8px; color: var(--blue-900); }
+    .hidden { display: none !important; }
+
+    .btn {
+      width: 100%; border: 0; border-radius: 14px; padding: 14px 16px; font-size: 1rem; font-weight: 700;
+      cursor: pointer; transition: transform var(--transition), filter var(--transition), box-shadow var(--transition); min-height: 52px;
+    }
+    .btn:active { transform: scale(0.98); }
+    .btn:focus-visible { outline: 3px solid #9bbcff; outline-offset: 2px; }
+    .btn-primary { background: linear-gradient(180deg, var(--blue-500), var(--blue-700)); color: var(--white); box-shadow: 0 7px 18px rgba(43, 108, 212, 0.35); }
+    .btn-primary:hover { filter: brightness(1.05); }
+    .btn-gold { background: linear-gradient(180deg, #f7c960, var(--gold-600)); color: #3b2a00; box-shadow: 0 7px 18px rgba(242, 182, 61, 0.35); }
+    .btn-secondary { background: #eaf1ff; color: var(--blue-900); border: 1px solid #c9dbff; }
+    .btn-danger { background: #ffe8e8; color: #8f1f1f; border: 1px solid #f7b9b9; }
+
+    .btn-stack { display: grid; gap: 10px; margin-top: 14px; }
+    .form-grid { display: grid; grid-template-columns: 1fr; gap: 14px; }
+
+    label { font-size: 0.98rem; font-weight: 700; color: var(--blue-900); margin-bottom: 6px; display: block; }
+    input {
+      width: 100%; border-radius: var(--radius-sm); border: 1px solid #c5d6f8; padding: 14px; font-size: 1rem;
+      min-height: 52px; color: var(--text); background: #fbfdff;
+    }
+    input:focus { outline: 2px solid #9bbcff; border-color: #7ca2e7; }
+
+    .meta-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+    .meta-box { background: #edf3ff; border-radius: 12px; padding: 10px 12px; text-align: center; }
+    .meta-label { font-size: 0.8rem; color: var(--muted); margin-bottom: 4px; }
+    .meta-value { font-size: 1.05rem; font-weight: 800; color: var(--blue-900); }
+
+    .timer { text-align: center; font-weight: 800; color: var(--blue-900); margin-bottom: 10px; font-size: 1.05rem; }
+    .timer.warning { color: #bf7400; }
+    .timer.danger { color: var(--error); }
+
+    .question-text { font-size: clamp(1.02rem, 3.8vw, 1.25rem); line-height: 1.5; font-weight: 700; margin-bottom: 12px; color: #102e63; }
+    .answers { display: grid; gap: 10px; }
+    .answer-btn { text-align: left; background: #f7faff; border: 1px solid #cfe0ff; color: #163968; font-weight: 700; }
+    .answer-btn.correct { background: #e9f8ef; border-color: #8dd5a5; color: #106834; }
+    .answer-btn.wrong { background: #ffecee; border-color: #f2a2ad; color: #8e1c35; }
+
+    .feedback { margin-top: 10px; font-weight: 800; text-align: center; min-height: 24px; }
+    .feedback.ok { color: var(--success); }
+    .feedback.bad { color: var(--error); }
+
+    .result-list, .leaderboard-table, .admin-table {
+      width: 100%; border-collapse: collapse; margin-top: 12px; font-size: 0.95rem;
+    }
+    .result-list td, .admin-table th, .admin-table td { padding: 8px 6px; border-bottom: 1px solid #e8eef9; }
+
+    .table-wrap {
+      overflow-x: auto; border: 1px solid #d8e5ff; border-radius: 12px; background: #fbfdff;
+    }
+    .leaderboard-table th, .leaderboard-table td, .admin-table th, .admin-table td {
+      padding: 10px 8px; border-bottom: 1px solid #eaf1ff; text-align: left; white-space: nowrap;
+    }
+    .leaderboard-table th, .admin-table th {
+      color: var(--blue-900); background: #edf3ff; position: sticky; top: 0; z-index: 1;
+    }
+
+    .top1 { background: #fff7df; }
+    .top2 { background: #f2f5ff; }
+    .top3 { background: #fff2e8; }
+    .status-note { color: var(--muted); font-size: 0.88rem; margin-top: 8px; text-align: center; min-height: 1.1rem; }
+
+    footer { margin-top: auto; width: 100%; text-align: center; color: #38588c; font-weight: 600; padding-top: 10px; font-size: 0.92rem; }
+
+    @keyframes fadeUp {
+      from { transform: translateY(8px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    @media (min-width: 760px) {
+      .btn-stack.inline { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+  </style>
+</head>
+<body>
+  <main class="app">
+    <div class="container">
+      <section id="welcome-screen" class="card">
+        <h1>Math Week Challenge</h1>
+        <h2>IT &amp; Business College</h2>
+        <p class="subtitle">Solve tasks, earn points, become a winner!</p>
+        <button id="go-register" class="btn btn-primary">Start Game</button>
+      </section>
+
+      <section id="register-screen" class="card hidden">
+        <h2 class="section-title">Student Registration</h2>
+        <form id="register-form" class="form-grid" autocomplete="on">
+          <div>
+            <label for="fullName">Full Name (FIO)</label>
+            <input id="fullName" name="fullName" type="text" required autocomplete="name" placeholder="Enter your full name" />
+          </div>
+          <div>
+            <label for="group">Group</label>
+            <input id="group" name="group" type="text" required placeholder="Example: IT-21" />
+          </div>
+          <div>
+            <label for="studentId">Student ID (optional)</label>
+            <input id="studentId" name="studentId" type="text" inputmode="numeric" placeholder="Enter student ID" />
+          </div>
+          <button type="submit" class="btn btn-primary">Begin Challenge</button>
+        </form>
+      </section>
+
+      <section id="game-screen" class="card hidden">
+        <div class="meta-row">
+          <div class="meta-box">
+            <p class="meta-label">Progress</p>
+            <p id="progress" class="meta-value">Question 1 of 15</p>
+          </div>
+          <div class="meta-box">
+            <p class="meta-label">Score</p>
+            <p id="score" class="meta-value">0</p>
+          </div>
+        </div>
+        <div id="timer" class="timer">Time left: 15s</div>
+        <p id="question-text" class="question-text"></p>
+        <div id="answers" class="answers"></div>
+        <p id="feedback" class="feedback" aria-live="polite"></p>
+      </section>
+
+      <section id="results-screen" class="card hidden">
+        <h2 class="section-title">Your Results</h2>
+        <table class="result-list" aria-label="Result details">
+          <tbody>
+            <tr><td><strong>Full Name</strong></td><td id="r-name"></td></tr>
+            <tr><td><strong>Group</strong></td><td id="r-group"></td></tr>
+            <tr><td><strong>Student ID</strong></td><td id="r-id"></td></tr>
+            <tr><td><strong>Final Score</strong></td><td id="r-score"></td></tr>
+            <tr><td><strong>Correct Answers</strong></td><td id="r-correct"></td></tr>
+            <tr><td><strong>Wrong Answers</strong></td><td id="r-wrong"></td></tr>
+            <tr><td><strong>Date and Time</strong></td><td id="r-datetime"></td></tr>
+          </tbody>
+        </table>
+        <p id="congrats" class="subtitle" style="margin-top:14px;"></p>
+        <div class="btn-stack inline">
+          <button id="play-again" class="btn btn-primary">Play Again</button>
+          <button id="view-board" class="btn btn-secondary">View Winners</button>
+        </div>
+      </section>
+
+      <section id="leaderboard-screen" class="card hidden">
+        <h2 class="section-title">Winners of Math Week</h2>
+        <div class="table-wrap">
+          <table class="leaderboard-table" aria-label="Leaderboard">
+            <thead>
+              <tr>
+                <th>Rank</th><th>Full Name</th><th>Group</th><th>Score</th><th>Date</th><th>Time</th>
+              </tr>
+            </thead>
+            <tbody id="leaderboard-body"></tbody>
+          </table>
+        </div>
+        <div class="btn-stack">
+          <button id="open-admin" class="btn btn-secondary">Open Admin Panel</button>
+          <button id="new-player" class="btn btn-primary">New Player</button>
+        </div>
+        <p class="status-note">Results are saved on this device using localStorage.</p>
+      </section>
+
+      <section id="admin-screen" class="card hidden">
+        <h2 class="section-title">Admin Panel</h2>
+        <p class="subtitle" style="font-size:0.98rem; margin-bottom:12px;">View all student results, export to Excel CSV, and optionally send to Google Sheets webhook.</p>
+
+        <p class="subsection">All Saved Results</p>
+        <div class="table-wrap">
+          <table class="admin-table" aria-label="Admin results table">
+            <thead>
+              <tr>
+                <th>Rank</th><th>Full Name</th><th>Group</th><th>Student ID</th><th>Score</th><th>Correct</th><th>Wrong</th><th>Date</th><th>Time</th>
+              </tr>
+            </thead>
+            <tbody id="admin-body"></tbody>
+          </table>
+        </div>
+
+        <p class="subsection">Remote Submission (Optional)</p>
+        <div class="form-grid">
+          <div>
+            <label for="webhookUrl">Google Sheets Webhook URL</label>
+            <input id="webhookUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec" />
+          </div>
+          <button id="send-webhook" class="btn btn-secondary">Send Results to Webhook</button>
+        </div>
+
+        <div class="btn-stack" style="margin-top:16px;">
+          <button id="export-btn" class="btn btn-gold">Export Results to Excel</button>
+          <button id="clear-btn" class="btn btn-danger">Clear All Results</button>
+          <button id="back-winners" class="btn btn-primary">Back to Winners</button>
+        </div>
+        <p id="admin-status" class="status-note" aria-live="polite"></p>
+      </section>
+    </div>
+
+    <footer>IT &amp; Business College – Math Week</footer>
+  </main>
+
+  <script>
+    const TOTAL_QUESTIONS = 15;
+    const TIME_PER_QUESTION = 15;
+    const STORAGE_KEY = 'mathWeekResultsITBusinessCollege';
+
+    const questions = [
+      { type: 'Arithmetic', text: 'What is 48 ÷ 6 + 7?', options: ['13', '15', '12', '11'], correct: 1 },
+      { type: 'Arithmetic', text: 'What is 19 + 27 - 14?', options: ['30', '32', '28', '34'], correct: 1 },
+      { type: 'Algebra', text: 'If x + 9 = 17, what is x?', options: ['6', '7', '8', '9'], correct: 2 },
+      { type: 'Algebra', text: 'Solve: 3y = 45', options: ['12', '15', '18', '10'], correct: 1 },
+      { type: 'Percentages', text: 'What is 25% of 200?', options: ['25', '40', '50', '75'], correct: 2 },
+      { type: 'Percentages', text: 'A price drops from $80 to $60. What is the discount percent?', options: ['20%', '25%', '30%', '15%'], correct: 1 },
+      { type: 'Sequence', text: 'Find the next number: 2, 4, 8, 16, ?', options: ['18', '24', '30', '32'], correct: 3 },
+      { type: 'Sequence', text: 'Find the next number: 5, 9, 13, 17, ?', options: ['18', '19', '20', '21'], correct: 3 },
+      { type: 'Logic', text: 'If all coders are thinkers and Ali is a coder, Ali is a...', options: ['Teacher', 'Thinker', 'Manager', 'Beginner'], correct: 1 },
+      { type: 'Logic', text: 'Which number is odd one out: 14, 21, 28, 35?', options: ['14', '21', '28', '35'], correct: 0 },
+      { type: 'Word Problem', text: 'A class has 18 girls and 12 boys. How many students in total?', options: ['20', '28', '30', '32'], correct: 2 },
+      { type: 'Word Problem', text: 'A bus had 40 students. 9 got off and 5 got on. How many now?', options: ['34', '35', '36', '37'], correct: 2 },
+      { type: 'Arithmetic', text: 'What is 7 × 8 - 9?', options: ['47', '48', '49', '56'], correct: 0 },
+      { type: 'Algebra', text: 'If 2a + 6 = 20, then a = ?', options: ['6', '7', '8', '9'], correct: 1 },
+      { type: 'Logic', text: 'You answer 12 out of 15 correctly. How many are wrong?', options: ['1', '2', '3', '4'], correct: 2 }
+    ];
+
+    const els = {
+      welcome: document.getElementById('welcome-screen'),
+      register: document.getElementById('register-screen'),
+      game: document.getElementById('game-screen'),
+      results: document.getElementById('results-screen'),
+      leaderboard: document.getElementById('leaderboard-screen'),
+      admin: document.getElementById('admin-screen'),
+      goRegister: document.getElementById('go-register'),
+      registerForm: document.getElementById('register-form'),
+      progress: document.getElementById('progress'),
+      score: document.getElementById('score'),
+      timer: document.getElementById('timer'),
+      questionText: document.getElementById('question-text'),
+      answers: document.getElementById('answers'),
+      feedback: document.getElementById('feedback'),
+      rName: document.getElementById('r-name'),
+      rGroup: document.getElementById('r-group'),
+      rId: document.getElementById('r-id'),
+      rScore: document.getElementById('r-score'),
+      rCorrect: document.getElementById('r-correct'),
+      rWrong: document.getElementById('r-wrong'),
+      rDateTime: document.getElementById('r-datetime'),
+      congrats: document.getElementById('congrats'),
+      playAgain: document.getElementById('play-again'),
+      viewBoard: document.getElementById('view-board'),
+      boardBody: document.getElementById('leaderboard-body'),
+      adminBody: document.getElementById('admin-body'),
+      openAdmin: document.getElementById('open-admin'),
+      backWinners: document.getElementById('back-winners'),
+      exportBtn: document.getElementById('export-btn'),
+      clearBtn: document.getElementById('clear-btn'),
+      webhookUrl: document.getElementById('webhookUrl'),
+      sendWebhook: document.getElementById('send-webhook'),
+      adminStatus: document.getElementById('admin-status'),
+      newPlayer: document.getElementById('new-player')
+    };
+
+    let state = { student: null, index: 0, score: 0, correctCount: 0, wrongCount: 0, timeLeft: TIME_PER_QUESTION, timerId: null, answered: false };
+
+    const showScreen = (screen) => {
+      [els.welcome, els.register, els.game, els.results, els.leaderboard, els.admin].forEach((s) => s.classList.add('hidden'));
+      screen.classList.remove('hidden');
+    };
+
+    const formatDateTime = (dateObj) => {
+      const date = dateObj.toLocaleDateString();
+      const time = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+      return { date, time };
+    };
+
+    const shuffleQuestions = () => questions.sort(() => Math.random() - 0.5);
+
+    const startTimer = () => {
+      clearInterval(state.timerId);
+      state.timeLeft = TIME_PER_QUESTION;
+      updateTimerView();
+      state.timerId = setInterval(() => {
+        state.timeLeft -= 1;
+        updateTimerView();
+        if (state.timeLeft <= 0) {
+          clearInterval(state.timerId);
+          handleTimeout();
+        }
+      }, 1000);
+    };
+
+    const updateTimerView = () => {
+      els.timer.textContent = `Time left: ${state.timeLeft}s`;
+      els.timer.classList.remove('warning', 'danger');
+      if (state.timeLeft <= 10 && state.timeLeft > 5) els.timer.classList.add('warning');
+      if (state.timeLeft <= 5) els.timer.classList.add('danger');
+    };
+
+    const renderQuestion = () => {
+      const q = questions[state.index];
+      state.answered = false;
+      els.feedback.textContent = '';
+      els.feedback.className = 'feedback';
+      els.progress.textContent = `Question ${state.index + 1} of ${TOTAL_QUESTIONS}`;
+      els.score.textContent = String(state.score);
+      els.questionText.textContent = `[${q.type}] ${q.text}`;
+      els.answers.innerHTML = '';
+
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement('button');
+        btn.type = 'button';
+        btn.className = 'btn answer-btn';
+        btn.textContent = opt;
+        btn.addEventListener('click', () => handleAnswer(i, btn));
+        els.answers.appendChild(btn);
+      });
+
+      startTimer();
+    };
+
+    const lockAnswers = () => {
+      Array.from(els.answers.children).forEach((btn) => {
+        btn.disabled = true;
+        btn.style.opacity = '0.9';
+      });
+    };
+
+    const handleAnswer = (selectedIndex, btnEl) => {
+      if (state.answered) return;
+      state.answered = true;
+      clearInterval(state.timerId);
+      const q = questions[state.index];
+      lockAnswers();
+      if (selectedIndex === q.correct) {
+        state.score += 1;
+        state.correctCount += 1;
+        btnEl.classList.add('correct');
+        els.feedback.textContent = '✅ Correct! Great work.';
+        els.feedback.classList.add('ok');
+      } else {
+        state.wrongCount += 1;
+        btnEl.classList.add('wrong');
+        els.answers.children[q.correct].classList.add('correct');
+        els.feedback.textContent = '❌ Incorrect. Keep going!';
+        els.feedback.classList.add('bad');
+      }
+      els.score.textContent = String(state.score);
+      setTimeout(nextQuestion, 850);
+    };
+
+    const handleTimeout = () => {
+      if (state.answered) return;
+      state.answered = true;
+      state.wrongCount += 1;
+      lockAnswers();
+      const q = questions[state.index];
+      els.answers.children[q.correct].classList.add('correct');
+      els.feedback.textContent = '⏰ Time is up! Moving to next question.';
+      els.feedback.classList.add('bad');
+      setTimeout(nextQuestion, 850);
+    };
+
+    const nextQuestion = () => {
+      state.index += 1;
+      if (state.index >= TOTAL_QUESTIONS) endGame();
+      else renderQuestion();
+    };
+
+    const saveResult = (result) => {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      saved.push(result);
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(saved));
+    };
+
+    const getSortedResults = () => {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      return saved.sort((a, b) => b.score - a.score || new Date(b.createdAt) - new Date(a.createdAt));
+    };
+
+    const endGame = () => {
+      clearInterval(state.timerId);
+      const now = new Date();
+      const formatted = formatDateTime(now);
+      const result = {
+        fullName: state.student.fullName,
+        group: state.student.group,
+        studentId: state.student.studentId || '-',
+        score: state.score,
+        correct: state.correctCount,
+        wrong: state.wrongCount,
+        date: formatted.date,
+        time: formatted.time,
+        createdAt: now.toISOString()
+      };
+
+      saveResult(result);
+      els.rName.textContent = result.fullName;
+      els.rGroup.textContent = result.group;
+      els.rId.textContent = result.studentId;
+      els.rScore.textContent = `${result.score} / ${TOTAL_QUESTIONS}`;
+      els.rCorrect.textContent = String(result.correct);
+      els.rWrong.textContent = String(result.wrong);
+      els.rDateTime.textContent = `${result.date} ${result.time}`;
+
+      const percent = (result.score / TOTAL_QUESTIONS) * 100;
+      els.congrats.textContent = percent >= 80
+        ? '🌟 Excellent performance! Congratulations, champion!'
+        : percent >= 60
+          ? '👏 Good job! Keep practicing to reach the top!'
+          : '💡 Nice effort! Review and try again for a higher score!';
+
+      renderLeaderboard();
+      renderAdminTable();
+      showScreen(els.results);
+    };
+
+    const escapeHtml = (str) => String(str)
+      .replaceAll('&', '&amp;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#039;');
+
+    const renderLeaderboard = () => {
+      const data = getSortedResults();
+      els.boardBody.innerHTML = '';
+      data.forEach((row, idx) => {
+        const tr = document.createElement('tr');
+        if (idx === 0) tr.classList.add('top1');
+        if (idx === 1) tr.classList.add('top2');
+        if (idx === 2) tr.classList.add('top3');
+        tr.innerHTML = `
+          <td>${idx + 1}</td>
+          <td>${escapeHtml(row.fullName)}</td>
+          <td>${escapeHtml(row.group)}</td>
+          <td>${row.score}/${TOTAL_QUESTIONS}</td>
+          <td>${row.date}</td>
+          <td>${row.time}</td>`;
+        els.boardBody.appendChild(tr);
+      });
+
+      if (!data.length) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td colspan="6">No results yet. Be the first winner!</td>';
+        els.boardBody.appendChild(tr);
+      }
+    };
+
+    const renderAdminTable = () => {
+      const data = getSortedResults();
+      els.adminBody.innerHTML = '';
+      data.forEach((row, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td>${idx + 1}</td>
+          <td>${escapeHtml(row.fullName)}</td>
+          <td>${escapeHtml(row.group)}</td>
+          <td>${escapeHtml(row.studentId || '-')}</td>
+          <td>${row.score}/${TOTAL_QUESTIONS}</td>
+          <td>${row.correct}</td>
+          <td>${row.wrong}</td>
+          <td>${row.date}</td>
+          <td>${row.time}</td>`;
+        els.adminBody.appendChild(tr);
+      });
+
+      if (!data.length) {
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td colspan="9">No saved student results yet.</td>';
+        els.adminBody.appendChild(tr);
+      }
+    };
+
+    const toCsv = (data) => {
+      const header = ['Rank', 'Full Name', 'Group', 'Student ID', 'Score', 'Correct Answers', 'Wrong Answers', 'Date', 'Time'];
+      const rows = data.map((item, idx) => [idx + 1, item.fullName, item.group, item.studentId, item.score, item.correct, item.wrong, item.date, item.time]);
+      return [header, ...rows]
+        .map((row) => row.map((value) => `"${String(value).replaceAll('"', '""')}"`).join(','))
+        .join('\r\n');
+    };
+
+    const exportCsv = () => {
+      const data = getSortedResults();
+      if (!data.length) return alert('No results to export yet.');
+      const csv = toCsv(data);
+      const blob = new Blob(['\uFEFF' + csv], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'math_week_results_it_business_college.csv';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      els.adminStatus.textContent = 'CSV exported successfully.';
+    };
+
+    const clearResults = () => {
+      const ok = confirm('Are you sure you want to clear all saved results? This cannot be undone.');
+      if (!ok) return;
+      localStorage.removeItem(STORAGE_KEY);
+      renderLeaderboard();
+      renderAdminTable();
+      els.adminStatus.textContent = 'All results were cleared.';
+    };
+
+    const sendResultsToWebhook = async () => {
+      const url = (els.webhookUrl.value || '').trim();
+      const data = getSortedResults();
+      if (!url) return alert('Please enter a webhook URL first.');
+      if (!data.length) return alert('No results available to send.');
+
+      els.sendWebhook.disabled = true;
+      els.adminStatus.textContent = 'Sending results to webhook...';
+
+      try {
+        const payload = {
+          event: 'Math Week Challenge',
+          college: 'IT & Business College',
+          exportedAt: new Date().toISOString(),
+          totalRecords: data.length,
+          results: data.map((item, idx) => ({
+            rank: idx + 1,
+            fullName: item.fullName,
+            group: item.group,
+            studentId: item.studentId,
+            score: item.score,
+            correctAnswers: item.correct,
+            wrongAnswers: item.wrong,
+            date: item.date,
+            time: item.time,
+            createdAt: item.createdAt
+          }))
+        };
+
+        const response = await fetch(url, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        if (!response.ok) throw new Error(`HTTP ${response.status}`);
+        els.adminStatus.textContent = 'Results sent successfully to webhook.';
+      } catch (error) {
+        els.adminStatus.textContent = `Webhook submission failed: ${error.message}`;
+      } finally {
+        els.sendWebhook.disabled = false;
+      }
+    };
+
+    const resetGameState = () => {
+      clearInterval(state.timerId);
+      state = { ...state, index: 0, score: 0, correctCount: 0, wrongCount: 0, timeLeft: TIME_PER_QUESTION, timerId: null, answered: false };
+    };
+
+    const startGame = () => {
+      resetGameState();
+      shuffleQuestions();
+      showScreen(els.game);
+      renderQuestion();
+    };
+
+    els.goRegister.addEventListener('click', () => {
+      showScreen(els.register);
+      document.getElementById('fullName').focus();
+    });
+
+    els.registerForm.addEventListener('submit', (event) => {
+      event.preventDefault();
+      const formData = new FormData(event.target);
+      const fullName = (formData.get('fullName') || '').toString().trim();
+      const group = (formData.get('group') || '').toString().trim();
+      const studentId = (formData.get('studentId') || '').toString().trim();
+      if (!fullName || !group) return alert('Please enter your full name and group.');
+      state.student = { fullName, group, studentId };
+      startGame();
+    });
+
+    els.playAgain.addEventListener('click', startGame);
+    els.viewBoard.addEventListener('click', () => { renderLeaderboard(); showScreen(els.leaderboard); });
+    els.newPlayer.addEventListener('click', () => { els.registerForm.reset(); showScreen(els.welcome); });
+    els.openAdmin.addEventListener('click', () => { renderAdminTable(); els.adminStatus.textContent = ''; showScreen(els.admin); });
+    els.backWinners.addEventListener('click', () => { renderLeaderboard(); showScreen(els.leaderboard); });
+    els.exportBtn.addEventListener('click', exportCsv);
+    els.clearBtn.addEventListener('click', clearResults);
+    els.sendWebhook.addEventListener('click', sendResultsToWebhook);
+
+    renderLeaderboard();
+    renderAdminTable();
+  </script>
+</body>
+</html>
