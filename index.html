@@ -392,6 +392,10 @@
         <h1>Math Week Challenge</h1>
         <h2>IT &amp; Business College</h2>
         <p class="subtitle">Solve tasks, earn points, become a winner!</p>
+        <div class="btn-stack">
+          <button id="go-register" class="btn btn-primary">Start Game</button>
+          <button id="go-admin" class="btn btn-secondary">Administrator Panel</button>
+        </div>
         <button id="go-register" class="btn btn-primary">Start Game</button>
       </section>
 
@@ -485,6 +489,18 @@
         <h2 class="section-title">Admin Panel</h2>
         <p class="subtitle" style="font-size:0.98rem; margin-bottom:12px;">View all student results, export to Excel CSV, and optionally send to Google Sheets webhook.</p>
 
+        <div class="meta-row" style="margin-bottom:8px;">
+          <div class="meta-box">
+            <p class="meta-label">Saved Attempts</p>
+            <p id="admin-total" class="meta-value">0</p>
+          </div>
+          <div class="meta-box">
+            <p class="meta-label">Best Score</p>
+            <p id="admin-best" class="meta-value">0/15</p>
+          </div>
+        </div>
+
+        <p class="subsection">All Saved Results (All Attempts)</p>
         <p class="subsection">All Saved Results</p>
         <div class="table-wrap">
           <table class="admin-table" aria-label="Admin results table">
@@ -574,12 +590,15 @@
       boardBody: document.getElementById('leaderboard-body'),
       adminBody: document.getElementById('admin-body'),
       openAdmin: document.getElementById('open-admin'),
+      goAdmin: document.getElementById('go-admin'),
       backWinners: document.getElementById('back-winners'),
       exportBtn: document.getElementById('export-btn'),
       clearBtn: document.getElementById('clear-btn'),
       webhookUrl: document.getElementById('webhookUrl'),
       sendWebhook: document.getElementById('send-webhook'),
       adminStatus: document.getElementById('admin-status'),
+      adminTotal: document.getElementById('admin-total'),
+      adminBest: document.getElementById('admin-best'),
       newPlayer: document.getElementById('new-player')
     };
 
@@ -817,6 +836,9 @@
 
     const renderAdminTable = () => {
       const data = getSortedResults();
+      const bestScore = data.length ? data[0].score : 0;
+      els.adminTotal.textContent = String(data.length);
+      els.adminBest.textContent = `${bestScore}/${TOTAL_QUESTIONS}`;
       els.adminBody.innerHTML = '';
       data.forEach((row, idx) => {
         const tr = document.createElement('tr');
@@ -950,6 +972,9 @@
       }
     };
 
+    const resetGameState = () => {
+      clearInterval(state.timerId);
+      state = { ...state, index: 0, score: 0, correctCount: 0, wrongCount: 0, timeLeft: TIME_PER_QUESTION, timerId: null, answered: false };
     const clearResults = () => {
       const confirmClear = confirm('Are you sure you want to clear all saved results? This cannot be undone.');
       if (!confirmClear) return;
@@ -983,6 +1008,11 @@
     els.goRegister.addEventListener('click', () => {
       showScreen(els.register);
       document.getElementById('fullName').focus();
+    });
+    els.goAdmin.addEventListener('click', () => {
+      renderAdminTable();
+      els.adminStatus.textContent = '';
+      showScreen(els.admin);
     });
 
     els.registerForm.addEventListener('submit', (event) => {
