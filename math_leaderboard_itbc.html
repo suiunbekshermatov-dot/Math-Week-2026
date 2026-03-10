@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Math Leaderboard – IT & Business College</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #eef4ff, #f8fbff);
+      color: #173153;
+    }
+    .wrap {
+      max-width: 840px;
+      margin: auto;
+      padding: 18px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.08);
+      padding: 20px;
+      margin: 12px 0;
+    }
+    h1, p {
+      margin: 0 0 12px;
+      text-align: center;
+    }
+    h1 {
+      color: #0f3d8a;
+    }
+    .sub {
+      color: #1f5fbf;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 10px;
+    }
+    .box {
+      background: #edf3ff;
+      border-radius: 14px;
+      padding: 14px;
+      text-align: center;
+    }
+    input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid #cfe0ff;
+      font-size: 1rem;
+    }
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .primary {
+      background: linear-gradient(180deg, #2b6cd4, #154a9a);
+      color: #fff;
+    }
+    .danger {
+      background: #fee2e2;
+      color: #991b1b;
+    }
+    table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+    th, td {
+      border-bottom: 1px solid #e8eef9;
+      padding: 10px;
+      text-align: left;
+    }
+    th {
+      background: #f3f7ff;
+    }
+    @media(max-width:700px){
+      .grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Math Leaderboard</h1>
+      <p class="sub">IT &amp; Business College</p>
+      <p>Standalone score board for Math Week events.</p>
+    </div>
+
+    <div class="card">
+      <div class="grid">
+        <div><input id="name" placeholder="Student name" /></div>
+        <div><input id="group" placeholder="Group" /></div>
+        <div><input id="score" type="number" placeholder="Score" /></div>
+      </div>
+
+      <div style="height:10px"></div>
+      <button class="btn primary" id="addBtn">Add Result</button>
+      <div style="height:10px"></div>
+      <button class="btn danger" id="clearBtn">Clear Leaderboard</button>
+    </div>
+
+    <div class="card">
+      <div class="grid">
+        <div class="box"><strong id="count">0</strong><div>Total Players</div></div>
+        <div class="box"><strong id="best">0</strong><div>Best Score</div></div>
+        <div class="box"><strong id="avg">0</strong><div>Average Score</div></div>
+      </div>
+    </div>
+
+    <div class="card">
+      <table>
+        <thead>
+          <tr>
+            <th>Rank</th>
+            <th>Name</th>
+            <th>Group</th>
+            <th>Score</th>
+          </tr>
+        </thead>
+        <tbody id="body"></tbody>
+      </table>
+    </div>
+  </div>
+
+  <script>
+    const key = "itbc_math_leaderboard";
+
+    function data() {
+      return JSON.parse(localStorage.getItem(key) || "[]");
+    }
+
+    function save(arr) {
+      localStorage.setItem(key, JSON.stringify(arr));
+    }
+
+    function render() {
+      const arr = data().sort((a, b) => b.score - a.score);
+      const body = document.getElementById("body");
+      body.innerHTML = "";
+
+      if (!arr.length) {
+        body.innerHTML = '<tr><td colspan="4">No scores yet.</td></tr>';
+      }
+
+      arr.forEach((r, i) => {
+        body.innerHTML += `<tr><td>${i + 1}</td><td>${r.name}</td><td>${r.group}</td><td>${r.score}</td></tr>`;
+      });
+
+      document.getElementById("count").textContent = arr.length;
+      document.getElementById("best").textContent = arr.length ? arr[0].score : 0;
+      document.getElementById("avg").textContent = arr.length
+        ? (arr.reduce((s, x) => s + x.score, 0) / arr.length).toFixed(1)
+        : 0;
+    }
+
+    document.getElementById("addBtn").onclick = () => {
+      const name = document.getElementById("name").value.trim();
+      const group = document.getElementById("group").value.trim();
+      const score = Number(document.getElementById("score").value);
+
+      if (!name || !group || Number.isNaN(score)) {
+        alert("Fill all fields");
+        return;
+      }
+
+      const arr = data();
+      arr.push({ name, group, score });
+      save(arr);
+      render();
+
+      document.getElementById("name").value = "";
+      document.getElementById("group").value = "";
+      document.getElementById("score").value = "";
+    };
+
+    document.getElementById("clearBtn").onclick = () => {
+      if (confirm("Clear all results?")) {
+        localStorage.removeItem(key);
+        render();
+      }
+    };
+
+    render();
+  </script>
+</body>
+</html>

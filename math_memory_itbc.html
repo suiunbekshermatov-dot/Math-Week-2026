@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Math Memory – IT & Business College</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #eef4ff, #f8fbff);
+      color: #173153;
+    }
+    .wrap {
+      max-width: 900px;
+      margin: auto;
+      padding: 18px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.08);
+      padding: 20px;
+      margin: 12px 0;
+    }
+    h1, p {
+      margin: 0 0 12px;
+      text-align: center;
+    }
+    h1 {
+      color: #0f3d8a;
+    }
+    .sub {
+      color: #1f5fbf;
+    }
+    .board {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+    .cell {
+      height: 90px;
+      border-radius: 14px;
+      border: none;
+      background: #2b6cd4;
+      color: #fff;
+      font-size: 1.1rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .cell.open, .cell.matched {
+      background: #eaf1ff;
+      color: #173153;
+      border: 2px solid #cfe0ff;
+    }
+    .small {
+      text-align: center;
+      color: #667085;
+    }
+    @media(max-width:600px){
+      .board { grid-template-columns: repeat(3, 1fr); }
+      .cell { height: 74px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Math Memory</h1>
+      <p class="sub">IT &amp; Business College</p>
+      <p>Match each expression with its correct answer.</p>
+      <p class="small">Moves: <span id="moves">0</span> | Matched: <span id="matched">0</span> / 6</p>
+    </div>
+
+    <div class="card">
+      <div class="board" id="board"></div>
+    </div>
+  </div>
+
+  <script>
+    const pairs = [
+      ["6×7", "42"],
+      ["25%", "0.25"],
+      ["√81", "9"],
+      ["12+18", "30"],
+      ["5²", "25"],
+      ["3x=21", "x=7"]
+    ];
+
+    let cards = [];
+    let first = null;
+    let second = null;
+    let lock = false;
+    let moves = 0;
+    let matched = 0;
+
+    function init() {
+      cards = [];
+      pairs.forEach((p, i) => {
+        cards.push({ id: i, text: p[0] }, { id: i, text: p[1] });
+      });
+      cards.sort(() => Math.random() - 0.5);
+
+      const board = document.getElementById("board");
+      board.innerHTML = "";
+
+      cards.forEach((c, idx) => {
+        const b = document.createElement("button");
+        b.className = "cell";
+        b.textContent = "?";
+        b.onclick = () => flip(b, idx);
+        board.appendChild(b);
+      });
+    }
+
+    function flip(el, idx) {
+      if (lock || el.classList.contains("matched") || el === first) return;
+
+      el.textContent = cards[idx].text;
+      el.classList.add("open");
+
+      if (!first) {
+        first = el;
+        first.idx = idx;
+        return;
+      }
+
+      second = el;
+      second.idx = idx;
+      moves++;
+      document.getElementById("moves").textContent = moves;
+      lock = true;
+
+      const ok = cards[first.idx].id === cards[second.idx].id;
+
+      setTimeout(() => {
+        if (ok) {
+          first.classList.add("matched");
+          second.classList.add("matched");
+          matched++;
+          document.getElementById("matched").textContent = matched;
+          if (matched === pairs.length) {
+            alert("Great job! Memory round complete.");
+          }
+        } else {
+          first.classList.remove("open");
+          second.classList.remove("open");
+          first.textContent = "?";
+          second.textContent = "?";
+        }
+        first = null;
+        second = null;
+        lock = false;
+      }, 700);
+    }
+
+    init();
+  </script>
+</body>
+</html>

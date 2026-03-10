@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Math Escape – IT & Business College</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #eef4ff, #f8fbff);
+      color: #173153;
+    }
+    .wrap {
+      max-width: 760px;
+      margin: auto;
+      padding: 18px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.08);
+      padding: 20px;
+      margin: 12px 0;
+    }
+    h1, h2, p {
+      margin: 0 0 12px;
+    }
+    h1, h2 {
+      text-align: center;
+      color: #0f3d8a;
+    }
+    .sub {
+      text-align: center;
+      color: #1f5fbf;
+    }
+    input {
+      width: 100%;
+      padding: 14px;
+      border-radius: 12px;
+      border: 1px solid #cfe0ff;
+      font-size: 1rem;
+    }
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      background: linear-gradient(180deg, #2b6cd4, #154a9a);
+      color: #fff;
+    }
+    .small {
+      text-align: center;
+      color: #667085;
+    }
+    .ok {
+      color: #15803d;
+    }
+    .bad {
+      color: #b91c1c;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Math Escape Room</h1>
+      <p class="sub">IT &amp; Business College</p>
+      <p class="small">Solve each code to unlock the next level.</p>
+    </div>
+
+    <div class="card">
+      <h2 id="levelTitle">Level 1</h2>
+      <p id="levelTask" class="small"></p>
+      <input id="answer" placeholder="Enter code answer" />
+      <div style="height:12px"></div>
+      <button class="btn" id="submitBtn">Unlock</button>
+      <p id="msg" class="small"></p>
+    </div>
+  </div>
+
+  <script>
+    const levels = [
+      { title: "Level 1", task: "Solve: 5x + 10 = 35", answer: "5" },
+      { title: "Level 2", task: "What is 20% of 250?", answer: "50" },
+      { title: "Level 3", task: "Next number: 4, 9, 16, 25, ?", answer: "36" },
+      { title: "Level 4", task: "If a triangle has angles 50° and 60°, the third angle is?", answer: "70" },
+      { title: "Final Door", task: "Code puzzle: 3×8 + 6", answer: "30" }
+    ];
+
+    let idx = 0;
+
+    function render() {
+      document.getElementById("levelTitle").textContent = levels[idx].title;
+      document.getElementById("levelTask").textContent = levels[idx].task;
+      document.getElementById("answer").value = "";
+      document.getElementById("msg").textContent = "";
+      document.getElementById("answer").focus();
+    }
+
+    document.getElementById("submitBtn").onclick = () => {
+      const val = document.getElementById("answer").value.trim();
+      const msg = document.getElementById("msg");
+
+      if (val === levels[idx].answer) {
+        msg.textContent = "Unlocked!";
+        msg.className = "small ok";
+        setTimeout(() => {
+          idx++;
+          if (idx >= levels.length) {
+            alert("Escape complete! You solved all rooms.");
+            idx = 0;
+          }
+          render();
+        }, 700);
+      } else {
+        msg.textContent = "Incorrect code. Try again.";
+        msg.className = "small bad";
+      }
+    };
+
+    render();
+  </script>
+</body>
+</html>

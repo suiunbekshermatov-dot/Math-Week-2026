@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Math Puzzle – IT & Business College</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #eef4ff, #f8fbff);
+      color: #173153;
+    }
+    .wrap {
+      max-width: 760px;
+      margin: auto;
+      padding: 18px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.08);
+      padding: 20px;
+      margin: 12px 0;
+    }
+    h1, h2, p {
+      margin: 0 0 12px;
+      text-align: center;
+    }
+    h1, h2 {
+      color: #0f3d8a;
+    }
+    .sub {
+      color: #1f5fbf;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+    .tile, .target {
+      padding: 18px;
+      border-radius: 14px;
+      text-align: center;
+      font-weight: 700;
+    }
+    .tile {
+      background: #edf3ff;
+      border: 2px solid #cfe0ff;
+      cursor: pointer;
+    }
+    .tile.used {
+      opacity: .35;
+      pointer-events: none;
+    }
+    .target {
+      background: #f8fbff;
+      border: 2px dashed #9bbcff;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+    .primary {
+      background: linear-gradient(180deg, #2b6cd4, #154a9a);
+      color: #fff;
+    }
+    .secondary {
+      background: #eaf1ff;
+      color: #154a9a;
+    }
+    .small {
+      text-align: center;
+      color: #667085;
+    }
+    .ok {
+      color: #15803d;
+    }
+    .bad {
+      color: #b91c1c;
+    }
+    @media(max-width:600px){
+      .grid { grid-template-columns: repeat(2, 1fr); }
+      .row { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Math Puzzle</h1>
+      <p class="sub">IT &amp; Business College</p>
+      <p>Solve number puzzles and build the correct answer.</p>
+    </div>
+
+    <div class="card">
+      <h2 id="prompt">Question</h2>
+      <div class="row">
+        <div class="target">Selected Answer: <span id="selected">_</span></div>
+        <div class="target">Score: <span id="score">0</span> / 5</div>
+      </div>
+
+      <div style="height:12px"></div>
+      <div class="grid" id="tiles"></div>
+
+      <div style="height:12px"></div>
+      <button class="btn primary" id="checkBtn">Check Answer</button>
+      <div style="height:10px"></div>
+      <button class="btn secondary" id="nextBtn">Next Puzzle</button>
+
+      <p id="msg" class="small"></p>
+    </div>
+  </div>
+
+  <script>
+    const puzzles = [
+      { q: "What is 18 + 24?", answer: "42" },
+      { q: "Solve: 7 × 6", answer: "42" },
+      { q: "25% of 160", answer: "40" },
+      { q: "Solve: 5x = 45", answer: "9" },
+      { q: "Next number: 3, 6, 12, 24, ?", answer: "48" }
+    ];
+
+    const bank = ["4","2","9","8","0","4","2","5","6","1","3","7"];
+    let idx = 0;
+    let score = 0;
+    let selected = "";
+
+    function render() {
+      document.getElementById("prompt").textContent = puzzles[idx].q;
+      document.getElementById("selected").textContent = selected || "_";
+      document.getElementById("score").textContent = score;
+      document.getElementById("msg").textContent = "";
+
+      const tiles = document.getElementById("tiles");
+      tiles.innerHTML = "";
+
+      bank.sort(() => Math.random() - 0.5).forEach((n) => {
+        const b = document.createElement("div");
+        b.className = "tile";
+        b.textContent = n;
+        b.onclick = () => {
+          selected += n;
+          b.classList.add("used");
+          document.getElementById("selected").textContent = selected;
+        };
+        tiles.appendChild(b);
+      });
+    }
+
+    document.getElementById("checkBtn").onclick = () => {
+      const good = selected === puzzles[idx].answer;
+      const msg = document.getElementById("msg");
+      if (good) {
+        score++;
+        msg.textContent = "Correct!";
+        msg.className = "small ok";
+      } else {
+        msg.textContent = "Incorrect. Correct answer: " + puzzles[idx].answer;
+        msg.className = "small bad";
+      }
+      document.getElementById("score").textContent = score;
+    };
+
+    document.getElementById("nextBtn").onclick = () => {
+      idx = (idx + 1) % puzzles.length;
+      selected = "";
+      render();
+    };
+
+    render();
+  </script>
+</body>
+</html>
