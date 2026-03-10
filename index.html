@@ -481,11 +481,8 @@
     const TIME_PER_QUESTION = 15;
     const STORAGE_KEY = 'mathWeekResultsITBusinessCollege';
 
-    // CHANGE THIS
-    const ADMIN_PASSWORD = 'Shermatov2026!';
-
-    // CHANGE THIS
-    const GOOGLE_SHEETS_WEBHOOK_URL = 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_EXEC_URL_HERE';
+    const ADMIN_PASSWORD = '12345';
+    const GOOGLE_SHEETS_WEBHOOK_URL = 'ВСТАВЬТЕ_СЮДА_EXEC_ССЫЛКУ';
 
     const GOOGLE_SHEET_ID = '1j7TCDPhZSsViNhvctkFTv84vQlXNuDeGfopaAGSLQkg';
 
@@ -565,7 +562,7 @@
     const formatDateTime = (dateObj) => {
       const date = dateObj.toLocaleDateString();
       const time = dateObj.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-      return { date, time, dateTime: `${date} ${time}` };
+      return { date, time };
     };
 
     const shuffleQuestions = () => {
@@ -859,7 +856,7 @@
       const url = GOOGLE_SHEETS_WEBHOOK_URL;
       const data = getSortedResults();
 
-      if (!url || url === 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_EXEC_URL_HERE') {
+      if (!url || url === 'ВСТАВЬТЕ_СЮДА_EXEC_ССЫЛКУ') {
         alert('Google Sheets webhook is not configured yet.');
         return;
       }
