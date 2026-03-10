@@ -27,12 +27,8 @@
       margin: 0 0 12px;
       text-align: center;
     }
-    h1 {
-      color: #0f3d8a;
-    }
-    .sub {
-      color: #1f5fbf;
-    }
+    h1 { color: #0f3d8a; }
+    .sub { color: #1f5fbf; }
     .board {
       display: grid;
       grid-template-columns: repeat(4, 1fr);
@@ -68,7 +64,7 @@
     <div class="card">
       <h1>Math Memory</h1>
       <p class="sub">IT &amp; Business College</p>
-      <p>Match each expression with its correct answer.</p>
+      <p>Pairs change every time.</p>
       <p class="small">Moves: <span id="moves">0</span> | Matched: <span id="matched">0</span> / 6</p>
     </div>
 
@@ -78,15 +74,26 @@
   </div>
 
   <script>
-    const pairs = [
+    const allPairs = [
       ["6×7", "42"],
       ["25%", "0.25"],
       ["√81", "9"],
       ["12+18", "30"],
       ["5²", "25"],
-      ["3x=21", "x=7"]
+      ["3x=21", "x=7"],
+      ["8×8", "64"],
+      ["50%", "0.5"],
+      ["√49", "7"],
+      ["15+10", "25"],
+      ["9×9", "81"],
+      ["20%", "0.2"]
     ];
 
+    function shuffleArray(arr) {
+      return [...arr].sort(() => Math.random() - 0.5);
+    }
+
+    let selectedPairs = [];
     let cards = [];
     let first = null;
     let second = null;
@@ -94,12 +101,25 @@
     let moves = 0;
     let matched = 0;
 
+    function startGame() {
+      selectedPairs = shuffleArray(allPairs).slice(0, 6);
+      cards = [];
+      first = null;
+      second = null;
+      lock = false;
+      moves = 0;
+      matched = 0;
+      document.getElementById("moves").textContent = moves;
+      document.getElementById("matched").textContent = matched;
+      init();
+    }
+
     function init() {
       cards = [];
-      pairs.forEach((p, i) => {
+      selectedPairs.forEach((p, i) => {
         cards.push({ id: i, text: p[0] }, { id: i, text: p[1] });
       });
-      cards.sort(() => Math.random() - 0.5);
+      cards = shuffleArray(cards);
 
       const board = document.getElementById("board");
       board.innerHTML = "";
@@ -139,8 +159,10 @@
           second.classList.add("matched");
           matched++;
           document.getElementById("matched").textContent = matched;
-          if (matched === pairs.length) {
+          if (matched === selectedPairs.length) {
             alert("Great job! Memory round complete.");
+            startGame();
+            return;
           }
         } else {
           first.classList.remove("open");
@@ -154,7 +176,7 @@
       }, 700);
     }
 
-    init();
+    startGame();
   </script>
 </body>
 </html>
