@@ -10,6 +10,7 @@
       --blue-700: #154a9a;
       --blue-500: #2b6cd4;
       --gold-600: #d99a1a;
+      --gold-500: #f7c960;
       --white: #ffffff;
       --text: #1f2a44;
       --success: #1f8f45;
@@ -43,7 +44,7 @@
     }
 
     .container {
-      width: min(100%, 780px);
+      width: min(100%, 900px);
       margin: 0 auto;
     }
 
@@ -73,6 +74,13 @@
       text-align: center;
     }
 
+    h3 {
+      font-size: 1.05rem;
+      color: var(--blue-900);
+      text-align: center;
+      margin-bottom: 8px;
+    }
+
     .subtitle {
       text-align: center;
       font-size: clamp(1rem, 3.8vw, 1.2rem);
@@ -95,6 +103,14 @@
     }
 
     .hidden { display: none !important; }
+
+    .logo {
+      width: 120px;
+      height: 120px;
+      object-fit: contain;
+      display: block;
+      margin: 0 auto 14px;
+    }
 
     .btn {
       width: 100%;
@@ -120,7 +136,7 @@
     .btn-primary:hover { filter: brightness(1.05); }
 
     .btn-gold {
-      background: linear-gradient(180deg, #f7c960, var(--gold-600));
+      background: linear-gradient(180deg, var(--gold-500), var(--gold-600));
       color: #3b2a00;
       box-shadow: 0 7px 18px rgba(242, 182, 61, 0.35);
     }
@@ -303,6 +319,35 @@
       line-height: 1.5;
     }
 
+    .games-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .game-card {
+      background: #f7fbff;
+      border: 1px solid #d8e5ff;
+      border-radius: 16px;
+      padding: 14px;
+      text-align: center;
+    }
+
+    .game-card p {
+      margin: 0 0 12px;
+      color: var(--muted);
+      font-size: 0.9rem;
+      line-height: 1.4;
+      text-align: center;
+    }
+
+    .game-link {
+      display: inline-block;
+      width: 100%;
+      text-decoration: none;
+    }
+
     footer {
       margin-top: auto;
       width: 100%;
@@ -323,18 +368,83 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
     }
+
+    @media (max-width: 700px) {
+      .games-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .logo {
+        width: 96px;
+        height: 96px;
+      }
+
+      .container {
+        width: min(100%, 780px);
+      }
+    }
   </style>
 </head>
 <body>
   <main class="app">
     <div class="container">
       <section id="welcome-screen" class="card">
+        <img src="itbc_logo.png" alt="IT &amp; Business College Logo" class="logo" />
         <h1>Math Week Challenge</h1>
         <h2>IT &amp; Business College</h2>
         <p class="subtitle">Solve tasks, earn points, become a winner!</p>
         <div class="btn-stack">
           <button id="go-register" class="btn btn-primary">Start Game</button>
           <button id="go-admin" class="btn btn-secondary">Administrator Panel</button>
+        </div>
+      </section>
+
+      <section id="games-screen" class="card">
+        <h2 class="section-title">Math Week Games</h2>
+        <p class="subtitle" style="font-size:0.98rem; margin-bottom:10px;">
+          Extra games for IT &amp; Business College students
+        </p>
+
+        <div class="games-grid">
+          <div class="game-card">
+            <h3>Math Quiz</h3>
+            <p>Fast quiz with questions, answers, and score table.</p>
+            <a class="game-link" href="math_quiz_itbc.html" target="_blank">
+              <button class="btn btn-primary">Open Math Quiz</button>
+            </a>
+          </div>
+
+          <div class="game-card">
+            <h3>Math Puzzle</h3>
+            <p>Solve number puzzles and logic challenges.</p>
+            <a class="game-link" href="math_puzzle_itbc.html" target="_blank">
+              <button class="btn btn-primary">Open Math Puzzle</button>
+            </a>
+          </div>
+
+          <div class="game-card">
+            <h3>Math Memory</h3>
+            <p>Match cards and train mathematical memory.</p>
+            <a class="game-link" href="math_memory_itbc.html" target="_blank">
+              <button class="btn btn-primary">Open Math Memory</button>
+            </a>
+          </div>
+
+          <div class="game-card">
+            <h3>Math Escape</h3>
+            <p>Escape room with math tasks and code solving.</p>
+            <a class="game-link" href="math_escape_itbc.html" target="_blank">
+              <button class="btn btn-primary">Open Math Escape</button>
+            </a>
+          </div>
+
+          <div class="game-card" style="grid-column: 1 / -1;">
+            <h3>Math Leaderboard</h3>
+            <p>View and manage top results for Math Week games.</p>
+            <a class="game-link" href="math_leaderboard_itbc.html" target="_blank">
+              <button class="btn btn-gold">Open Math Leaderboard</button>
+            </a>
+          </div>
         </div>
       </section>
 
@@ -557,6 +667,7 @@
     const showScreen = (screen) => {
       [els.welcome, els.register, els.game, els.results, els.leaderboard, els.admin].forEach((s) => s.classList.add('hidden'));
       screen.classList.remove('hidden');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
     };
 
     const formatDateTime = (dateObj) => {
