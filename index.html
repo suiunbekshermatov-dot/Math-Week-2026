@@ -122,6 +122,10 @@
       cursor: pointer;
       transition: transform var(--transition), filter var(--transition), box-shadow var(--transition);
       min-height: 52px;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .btn:active { transform: scale(0.98); }
@@ -343,9 +347,11 @@
     }
 
     .game-link {
-      display: inline-block;
+      display: inline-flex;
       width: 100%;
       text-decoration: none;
+      align-items: center;
+      justify-content: center;
     }
 
     footer {
@@ -409,41 +415,31 @@
           <div class="game-card">
             <h3>Math Quiz</h3>
             <p>Fast quiz with questions, answers, and score table.</p>
-            <a class="game-link" href="math_quiz_itbc.html" target="_blank">
-              <button class="btn btn-primary">Open Math Quiz</button>
-            </a>
+            <a class="btn btn-primary game-link" href="math_quiz_itbc.html" target="_blank">Open Math Quiz</a>
           </div>
 
           <div class="game-card">
             <h3>Math Puzzle</h3>
             <p>Solve number puzzles and logic challenges.</p>
-            <a class="game-link" href="math_puzzle_itbc.html" target="_blank">
-              <button class="btn btn-primary">Open Math Puzzle</button>
-            </a>
+            <a class="btn btn-primary game-link" href="math_puzzle_itbc.html" target="_blank">Open Math Puzzle</a>
           </div>
 
           <div class="game-card">
             <h3>Math Memory</h3>
             <p>Match cards and train mathematical memory.</p>
-            <a class="game-link" href="math_memory_itbc.html" target="_blank">
-              <button class="btn btn-primary">Open Math Memory</button>
-            </a>
+            <a class="btn btn-primary game-link" href="math_memory_itbc.html" target="_blank">Open Math Memory</a>
           </div>
 
           <div class="game-card">
             <h3>Math Escape</h3>
             <p>Escape room with math tasks and code solving.</p>
-            <a class="game-link" href="math_escape_itbc.html" target="_blank">
-              <button class="btn btn-primary">Open Math Escape</button>
-            </a>
+            <a class="btn btn-primary game-link" href="math_escape_itbc.html" target="_blank">Open Math Escape</a>
           </div>
 
           <div class="game-card" style="grid-column: 1 / -1;">
             <h3>Math Leaderboard</h3>
             <p>View and manage top results for Math Week games.</p>
-            <a class="game-link" href="math_leaderboard_itbc.html" target="_blank">
-              <button class="btn btn-gold">Open Math Leaderboard</button>
-            </a>
+            <a class="btn btn-gold game-link" href="math_leaderboard_itbc.html" target="_blank">Open Math Leaderboard</a>
           </div>
         </div>
       </section>
@@ -593,7 +589,6 @@
 
     const ADMIN_PASSWORD = '5rp2eeph3k';
     const GOOGLE_SHEETS_WEBHOOK_URL = 'https://script.google.com/macros/s/AKfycbygcPamoE3y82XvuMZkv0lLRbf-6uqwyc2q6EC9tUiV-K_MNbbrzfkgCmyI0mncTQFP/exec';
-
     const GOOGLE_SHEET_ID = '1j7TCDPhZSsViNhvctkFTv84vQlXNuDeGfopaAGSLQkg';
 
     const questions = [
@@ -967,7 +962,7 @@
       const url = GOOGLE_SHEETS_WEBHOOK_URL;
       const data = getSortedResults();
 
-      if (!url || url === 'ВСТАВЬТЕ_СЮДА_EXEC_ССЫЛКУ') {
+      if (!url) {
         alert('Google Sheets webhook is not configured yet.');
         return;
       }
