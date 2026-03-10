@@ -55,12 +55,8 @@
       text-align: center;
       color: #667085;
     }
-    .ok {
-      color: #15803d;
-    }
-    .bad {
-      color: #b91c1c;
-    }
+    .ok { color: #15803d; }
+    .bad { color: #b91c1c; }
   </style>
 </head>
 <body>
@@ -68,7 +64,7 @@
     <div class="card">
       <h1>Math Escape Room</h1>
       <p class="sub">IT &amp; Business College</p>
-      <p class="small">Solve each code to unlock the next level.</p>
+      <p class="small">Levels are shuffled every time.</p>
     </div>
 
     <div class="card">
@@ -82,15 +78,33 @@
   </div>
 
   <script>
-    const levels = [
-      { title: "Level 1", task: "Solve: 5x + 10 = 35", answer: "5" },
-      { title: "Level 2", task: "What is 20% of 250?", answer: "50" },
-      { title: "Level 3", task: "Next number: 4, 9, 16, 25, ?", answer: "36" },
-      { title: "Level 4", task: "If a triangle has angles 50° and 60°, the third angle is?", answer: "70" },
-      { title: "Final Door", task: "Code puzzle: 3×8 + 6", answer: "30" }
+    const allLevels = [
+      { task: "Solve: 5x + 10 = 35", answer: "5" },
+      { task: "What is 20% of 250?", answer: "50" },
+      { task: "Next number: 4, 9, 16, 25, ?", answer: "36" },
+      { task: "If a triangle has angles 50° and 60°, the third angle is?", answer: "70" },
+      { task: "Code puzzle: 3×8 + 6", answer: "30" },
+      { task: "Solve: 7x = 56", answer: "8" },
+      { task: "What is 25% of 400?", answer: "100" },
+      { task: "Next number: 10, 20, 40, 80, ?", answer: "160" }
     ];
 
+    function shuffleArray(arr) {
+      return [...arr].sort(() => Math.random() - 0.5);
+    }
+
+    let levels = [];
     let idx = 0;
+
+    function startGame() {
+      levels = shuffleArray(allLevels).slice(0, 5).map((item, i) => ({
+        title: i === 4 ? "Final Door" : "Level " + (i + 1),
+        task: item.task,
+        answer: item.answer
+      }));
+      idx = 0;
+      render();
+    }
 
     function render() {
       document.getElementById("levelTitle").textContent = levels[idx].title;
@@ -111,7 +125,8 @@
           idx++;
           if (idx >= levels.length) {
             alert("Escape complete! You solved all rooms.");
-            idx = 0;
+            startGame();
+            return;
           }
           render();
         }, 700);
@@ -121,7 +136,7 @@
       }
     };
 
-    render();
+    startGame();
   </script>
 </body>
 </html>
