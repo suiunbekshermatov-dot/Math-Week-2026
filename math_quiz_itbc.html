@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Math Quiz – IT & Business College</title>
+<style>
+body{
+font-family:Arial;
+text-align:center;
+background:#eef4ff;
+}
+button{
+padding:10px 20px;
+margin:10px;
+font-size:18px;
+}
+</style>
+</head>
+
+<body>
+
+<h1>Math Quiz</h1>
+<h3>IT & Business College</h3>
+
+<p>What is 12 × 4 ?</p>
+
+<button onclick="check(48)">48</button>
+<button onclick="check(42)">42</button>
+<button onclick="check(36)">36</button>
+
+<p id="result"></p>
+
+<script>
+function check(answer){
+
+if(answer==48){
+document.getElementById("result").innerHTML="✅ Correct!";
+}else{
+document.getElementById("result").innerHTML="❌ Wrong!";
+}
+
+}
+</script>
+
+</body>
+</html>
