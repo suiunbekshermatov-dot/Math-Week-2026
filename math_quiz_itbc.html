@@ -1,46 +1,173 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Math Quiz – IT & Business College</title>
-<style>
-body{
-font-family:Arial;
-text-align:center;
-background:#eef4ff;
-}
-button{
-padding:10px 20px;
-margin:10px;
-font-size:18px;
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Math Quiz – IT & Business College</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: linear-gradient(180deg, #eef4ff, #f8fbff);
+      color: #173153;
+    }
+    .wrap {
+      max-width: 760px;
+      margin: auto;
+      padding: 18px;
+    }
+    .card {
+      background: #fff;
+      border-radius: 18px;
+      box-shadow: 0 10px 24px rgba(0,0,0,.08);
+      padding: 20px;
+      margin: 12px 0;
+    }
+    h1, h2, p {
+      margin: 0 0 12px;
+      text-align: center;
+    }
+    h1, h2 { color: #0f3d8a; }
+    .sub { color: #1f5fbf; }
+    .answers {
+      display: grid;
+      gap: 10px;
+    }
+    .btn {
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      background: linear-gradient(180deg, #2b6cd4, #154a9a);
+      color: #fff;
+    }
+    .btn.secondary {
+      background: #eaf1ff;
+      color: #154a9a;
+    }
+    .small {
+      text-align: center;
+      color: #667085;
+    }
+    .ok { color: #15803d; }
+    .bad { color: #b91c1c; }
+    .meta {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+    .box {
+      background: #edf3ff;
+      border-radius: 12px;
+      padding: 10px;
+      text-align: center;
+    }
+    @media(max-width:600px) {
+      .meta { grid-template-columns: 1fr; }
+    }
+  </style>
 </head>
-
 <body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Math Quiz</h1>
+      <p class="sub">IT &amp; Business College</p>
+      <p>Questions are shuffled every time.</p>
+    </div>
 
-<h1>Math Quiz</h1>
-<h3>IT & Business College</h3>
+    <div class="card">
+      <div class="meta">
+        <div class="box">Question: <strong id="progress">1 / 10</strong></div>
+        <div class="box">Score: <strong id="score">0</strong></div>
+      </div>
+      <div style="height:12px"></div>
+      <h2 id="question">Question text</h2>
+      <div class="answers" id="answers"></div>
+      <p id="msg" class="small"></p>
+    </div>
+  </div>
 
-<p>What is 12 × 4 ?</p>
+  <script>
+    const quizData = [
+      { q: "What is 12 × 4?", options: ["48", "42", "36", "52"], correct: 0 },
+      { q: "What is 25% of 200?", options: ["25", "40", "50", "75"], correct: 2 },
+      { q: "Solve: 3x = 27", options: ["6", "7", "8", "9"], correct: 3 },
+      { q: "Next number: 2, 4, 8, 16, ?", options: ["18", "24", "32", "30"], correct: 2 },
+      { q: "What is 81 ÷ 9?", options: ["8", "7", "9", "6"], correct: 2 },
+      { q: "What is 15 + 26?", options: ["39", "40", "41", "42"], correct: 2 },
+      { q: "Solve: x + 11 = 20", options: ["7", "8", "9", "10"], correct: 2 },
+      { q: "What is 7 × 8 - 9?", options: ["47", "48", "49", "50"], correct: 0 },
+      { q: "What is 20% of 250?", options: ["40", "45", "50", "55"], correct: 2 },
+      { q: "Next number: 5, 10, 15, 20, ?", options: ["24", "25", "30", "35"], correct: 1 },
+      { q: "Solve: 2a + 6 = 20", options: ["5", "6", "7", "8"], correct: 2 },
+      { q: "How many wrong if 12 out of 15 are correct?", options: ["2", "3", "4", "5"], correct: 1 }
+    ];
 
-<button onclick="check(48)">48</button>
-<button onclick="check(42)">42</button>
-<button onclick="check(36)">36</button>
+    function shuffleArray(arr) {
+      return [...arr].sort(() => Math.random() - 0.5);
+    }
 
-<p id="result"></p>
+    let questions = [];
+    let index = 0;
+    let score = 0;
 
-<script>
-function check(answer){
+    function startQuiz() {
+      questions = shuffleArray(quizData).slice(0, 10);
+      index = 0;
+      score = 0;
+      renderQuestion();
+    }
 
-if(answer==48){
-document.getElementById("result").innerHTML="✅ Correct!";
-}else{
-document.getElementById("result").innerHTML="❌ Wrong!";
-}
+    function renderQuestion() {
+      const q = questions[index];
+      document.getElementById("progress").textContent = `${index + 1} / ${questions.length}`;
+      document.getElementById("score").textContent = score;
+      document.getElementById("question").textContent = q.q;
+      document.getElementById("msg").textContent = "";
 
-}
-</script>
+      const answers = document.getElementById("answers");
+      answers.innerHTML = "";
 
+      q.options.forEach((opt, i) => {
+        const btn = document.createElement("button");
+        btn.className = "btn";
+        btn.textContent = opt;
+        btn.onclick = () => checkAnswer(i);
+        answers.appendChild(btn);
+      });
+    }
+
+    function checkAnswer(selected) {
+      const q = questions[index];
+      const msg = document.getElementById("msg");
+
+      if (selected === q.correct) {
+        score++;
+        msg.textContent = "✅ Correct!";
+        msg.className = "small ok";
+      } else {
+        msg.textContent = `❌ Wrong! Correct answer: ${q.options[q.correct]}`;
+        msg.className = "small bad";
+      }
+
+      document.getElementById("score").textContent = score;
+
+      setTimeout(() => {
+        index++;
+        if (index < questions.length) {
+          renderQuestion();
+        } else {
+          document.getElementById("question").textContent = `Quiz finished! Your score: ${score} / ${questions.length}`;
+          document.getElementById("answers").innerHTML = `<button class="btn secondary" onclick="startQuiz()">Play Again</button>`;
+          document.getElementById("msg").textContent = "Questions will change again next time.";
+          document.getElementById("msg").className = "small";
+        }
+      }, 800);
+    }
+
+    startQuiz();
+  </script>
 </body>
 </html>
