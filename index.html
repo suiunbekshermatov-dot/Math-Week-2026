@@ -11,7 +11,6 @@
       --blue-500: #2b6cd4;
       --gold-600: #d99a1a;
       --white: #ffffff;
-      --bg: #f4f7fc;
       --text: #1f2a44;
       --success: #1f8f45;
       --error: #ca2f2f;
@@ -301,6 +300,7 @@
       margin-top: 8px;
       text-align: center;
       min-height: 1.1rem;
+      line-height: 1.5;
     }
 
     footer {
@@ -350,11 +350,12 @@
             <input id="group" name="group" type="text" required placeholder="Example: IT-21" />
           </div>
           <div>
-            <label for="studentId">Student ID (optional)</label>
-            <input id="studentId" name="studentId" type="text" inputmode="numeric" placeholder="Enter student ID" />
+            <label for="studentId">Student ID</label>
+            <input id="studentId" name="studentId" type="text" required inputmode="numeric" placeholder="Enter student ID" />
           </div>
           <button type="submit" class="btn btn-primary">Begin Challenge</button>
         </form>
+        <p class="small-note">Each student can take the challenge only one time on this device/browser.</p>
       </section>
 
       <section id="game-screen" class="card hidden">
@@ -389,8 +390,8 @@
         </table>
         <p id="congrats" class="subtitle" style="margin-top:14px;"></p>
         <div class="btn-stack inline">
-          <button id="play-again" class="btn btn-primary">Play Again</button>
           <button id="view-board" class="btn btn-secondary">View Winners</button>
+          <button id="play-again" class="btn btn-primary">Try Again (Admin use only)</button>
         </div>
       </section>
 
@@ -421,7 +422,7 @@
       <section id="admin-screen" class="card hidden">
         <h2 class="section-title">Admin Panel</h2>
         <p class="subtitle" style="font-size:0.98rem; margin-bottom:12px;">
-          View all student results, export to Excel CSV, and optionally send to Google Sheets webhook.
+          View all student results, export to Excel CSV, and send them only to your connected Google Sheets.
         </p>
 
         <div class="meta-row" style="margin-bottom:8px;">
@@ -455,14 +456,13 @@
           </table>
         </div>
 
-        <p class="subsection">Remote Submission (Optional)</p>
+        <p class="subsection">Google Sheets Submission</p>
         <div class="form-grid">
-          <div>
-            <label for="webhookUrl">Google Sheets Webhook URL</label>
-            <input id="webhookUrl" type="url" placeholder="https://script.google.com/macros/s/.../exec" />
-          </div>
-          <button id="send-webhook" class="btn btn-secondary">Send Results to Webhook</button>
+          <button id="send-webhook" class="btn btn-secondary">Send Results to Google Sheets</button>
         </div>
+        <p class="small-note">
+          This button sends data only to the Google Apps Script URL written inside the code.
+        </p>
 
         <div class="btn-stack" style="margin-top:16px;">
           <button id="export-btn" class="btn btn-gold">Export Results to Excel</button>
@@ -480,6 +480,14 @@
     const TOTAL_QUESTIONS = 15;
     const TIME_PER_QUESTION = 15;
     const STORAGE_KEY = 'mathWeekResultsITBusinessCollege';
+
+    // CHANGE THIS
+    const ADMIN_PASSWORD = 'Shermatov2026!';
+
+    // CHANGE THIS
+    const GOOGLE_SHEETS_WEBHOOK_URL = 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_EXEC_URL_HERE';
+
+    const GOOGLE_SHEET_ID = '1j7TCDPhZSsViNhvctkFTv84vQlXNuDeGfopaAGSLQkg';
 
     const questions = [
       { type: 'Arithmetic', text: 'What is 48 ÷ 6 + 7?', options: ['13', '15', '12', '11'], correct: 1 },
@@ -531,7 +539,6 @@
       backWinners: document.getElementById('back-winners'),
       exportBtn: document.getElementById('export-btn'),
       clearBtn: document.getElementById('clear-btn'),
-      webhookUrl: document.getElementById('webhookUrl'),
       sendWebhook: document.getElementById('send-webhook'),
       adminStatus: document.getElementById('admin-status'),
       adminTotal: document.getElementById('admin-total'),
@@ -563,6 +570,26 @@
 
     const shuffleQuestions = () => {
       questions.sort(() => Math.random() - 0.5);
+    };
+
+    const hasPlayed = (studentId, fullName) => {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]');
+      return saved.some(item =>
+        String(item.studentId).trim().toLowerCase() === String(studentId).trim().toLowerCase() ||
+        String(item.fullName).trim().toLowerCase() === String(fullName).trim().toLowerCase()
+      );
+    };
+
+    const requestAdminAccess = () => {
+      const enteredPassword = prompt('Enter admin password:');
+      if (enteredPassword === null) return;
+      if (enteredPassword !== ADMIN_PASSWORD) {
+        alert('Wrong password.');
+        return;
+      }
+      renderAdminTable();
+      els.adminStatus.textContent = '';
+      showScreen(els.admin);
     };
 
     const startTimer = () => {
@@ -618,7 +645,6 @@
 
     const handleAnswer = (selectedIndex, btnEl) => {
       if (state.answered) return;
-
       state.answered = true;
       clearInterval(state.timerId);
 
@@ -645,7 +671,6 @@
 
     const handleTimeout = () => {
       if (state.answered) return;
-
       state.answered = true;
       state.wrongCount += 1;
       lockAnswers();
@@ -660,11 +685,8 @@
 
     const nextQuestion = () => {
       state.index += 1;
-      if (state.index >= TOTAL_QUESTIONS) {
-        endGame();
-      } else {
-        renderQuestion();
-      }
+      if (state.index >= TOTAL_QUESTIONS) endGame();
+      else renderQuestion();
     };
 
     const saveResult = (result) => {
@@ -714,7 +736,6 @@
       els.rDateTime.textContent = `${result.date} ${result.time}`;
 
       const percent = (result.score / TOTAL_QUESTIONS) * 100;
-
       if (percent >= 80) {
         els.congrats.textContent = '🌟 Excellent performance! Congratulations, champion!';
       } else if (percent >= 60) {
@@ -835,11 +856,11 @@
     };
 
     const sendResultsToWebhook = async () => {
-      const url = (els.webhookUrl.value || '').trim();
+      const url = GOOGLE_SHEETS_WEBHOOK_URL;
       const data = getSortedResults();
 
-      if (!url) {
-        alert('Please enter a webhook URL first.');
+      if (!url || url === 'PASTE_YOUR_GOOGLE_APPS_SCRIPT_EXEC_URL_HERE') {
+        alert('Google Sheets webhook is not configured yet.');
         return;
       }
 
@@ -849,12 +870,13 @@
       }
 
       els.sendWebhook.disabled = true;
-      els.adminStatus.textContent = 'Sending results to webhook...';
+      els.adminStatus.textContent = 'Sending results to Google Sheets...';
 
       try {
         const payload = {
           event: 'Math Week Challenge',
           college: 'IT & Business College',
+          spreadsheetId: GOOGLE_SHEET_ID,
           exportedAt: new Date().toISOString(),
           totalRecords: data.length,
           results: data.map((item, idx) => ({
@@ -879,9 +901,9 @@
 
         if (!response.ok) throw new Error(`HTTP ${response.status}`);
 
-        els.adminStatus.textContent = 'Results sent successfully to webhook.';
+        els.adminStatus.textContent = 'Results sent successfully to Google Sheets.';
       } catch (error) {
-        els.adminStatus.textContent = `Webhook submission failed: ${error.message}`;
+        els.adminStatus.textContent = `Google Sheets submission failed: ${error.message}`;
       } finally {
         els.sendWebhook.disabled = false;
       }
@@ -913,11 +935,7 @@
       document.getElementById('fullName').focus();
     });
 
-    els.goAdmin.addEventListener('click', () => {
-      renderAdminTable();
-      els.adminStatus.textContent = '';
-      showScreen(els.admin);
-    });
+    els.goAdmin.addEventListener('click', requestAdminAccess);
 
     els.registerForm.addEventListener('submit', (event) => {
       event.preventDefault();
@@ -927,8 +945,13 @@
       const group = (formData.get('group') || '').toString().trim();
       const studentId = (formData.get('studentId') || '').toString().trim();
 
-      if (!fullName || !group) {
-        alert('Please enter your full name and group.');
+      if (!fullName || !group || !studentId) {
+        alert('Please enter your full name, group, and student ID.');
+        return;
+      }
+
+      if (hasPlayed(studentId, fullName)) {
+        alert('You have already taken this Math Week Challenge.');
         return;
       }
 
@@ -936,7 +959,14 @@
       startGame();
     });
 
-    els.playAgain.addEventListener('click', startGame);
+    els.playAgain.addEventListener('click', () => {
+      const enteredPassword = prompt('Admin password required to allow replay:');
+      if (enteredPassword !== ADMIN_PASSWORD) {
+        alert('Wrong password.');
+        return;
+      }
+      startGame();
+    });
 
     els.viewBoard.addEventListener('click', () => {
       renderLeaderboard();
@@ -948,11 +978,7 @@
       showScreen(els.welcome);
     });
 
-    els.openAdmin.addEventListener('click', () => {
-      renderAdminTable();
-      els.adminStatus.textContent = '';
-      showScreen(els.admin);
-    });
+    els.openAdmin.addEventListener('click', requestAdminAccess);
 
     els.backWinners.addEventListener('click', () => {
       renderLeaderboard();
